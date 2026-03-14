@@ -1,38 +1,76 @@
 
 import math
 import numpy as np 
+from abc import ABC , abstractmethod
+from dataclasses import dataclass , field
+
+@dataclass
+class LogicAB ( ABC ) :
+
+        x_input: list
+        y_input: list
+        XK: float = 0.0 
+
+        X: np.ndarray = field( init = False )
+        Y: np.ndarray = field( init = False )
+        N: int = field( init = False )
+        B1: float = field( init = False )
+        B0: float = field( init = False )
+        
+        def __post_init__ ( self ) :
+            
+            self.X = np.array( self.x_input ) 
+            self.Y = np.array ( self.y_input )
+            self.N = self.calculate_N()
+            self.XK = self.XK
+
+            self.Xaverage = np.mean( self.X )
+            self.Yaverage = np.mean ( self.Y )
+
+            self.Xsum = np.sum( self.X )
+            self.Ysum = np.sum( self.Y )
+
+            self.SumXsquare = np.sum( self.X ** 2 )
+            self.SumYsquare = np.sum( self.Y ** 2 )
+
+            self.Xsquare_average = (self.Xaverage ** 2)
+            self.Ysquare_average = (self.Yaverage ** 2) 
+
+            self.SPxy = math.sumprod ( self.X , self.Y )
+
+            self.B1 = self.calculate_B1()
+            self.B0 = self.calculate_B0()
+
+            self.Rxy = self.calculate_Rxy()
+            self.Rsquare = self.calculate_Rsquare()
+            self.YK = self.calculate_YK()
 
 
 
+        @abstractmethod
+        def calculate_B1 ( self ) : 
+            pass
+
+        @abstractmethod
+        def calculate_B0 ( self ) : 
+            pass
+        
+
+        @abstractmethod
+        def calculate_Rxy ( self ) : 
+            pass
+        @abstractmethod
+        def calculate_Rsquare ( self ) : 
+            pass
+        @abstractmethod
+        def calculate_YK ( self ) : 
+            pass
+
+        def __str__ ( self ) : 
+            return f"N: { self.N }\nXaverage: { self.Xaverage }\nYaverage: { self.Yaverage } \nXsum: { self.Xsum }\nYsum: { self.Ysum }\nSumXsquare: { self.SumXsquare }\nSumYsquare: { self.SumYsquare }\nXsquare_average: { self.Xsquare_average }\nYsquare_average: { self.Ysquare_average }\nSPxy: { self.SPxy }\nB1: { self.B1 }\nB0: { self.B0 }\nRxy: { self.Rxy }\nRsquare: { self.Rsquare }\nYK: { self.YK } \n\n "
 
 
-class Logic : 
-    def __init__( self  , X : list, Y : list , XK : float = 0   ) :
-        self.X = np.array( X ) 
-        self.Y = np.array ( Y )
-        self.N = self.calculate_N()
-        self.XK = XK
-
-        self.Xaverage = np.mean( self.X )
-        self.Yaverage = np.mean ( self.Y )
-
-        self.Xsum = np.sum( self.X )
-        self.Ysum = np.sum( self.Y )
-
-        self.SumXsquare = np.sum( self.X ** 2 )
-        self.SumYsquare = np.sum( self.Y ** 2 )
-
-        self.Xsquare_average = np.mean( self.X **2 ) 
-        self.Ysquare_average = np.mean( self.Y **2 ) 
-
-        self.SPxy = math.sumprod ( self.X , self.Y )
-
-        self.B1 = self.calculate_B1()
-        self.B0 = self.calculate_B0()
-
-        self.Rxy = self.calculate_Rxy()
-        self.Rsquare = self.calculate_Rsquare()
-        self.YK = self.calculate_YK()
+class Logic ( LogicAB ) : 
 
     def calculate_N ( self ) : 
         if len( self.X ) == len( self.Y ) :
@@ -48,11 +86,11 @@ class Logic :
         NXsquare_average = ( self.N * self.Xsquare_average )
 
         B1 = ( ( self.SPxy  - NXY ) / ( self.SumXsquare - NXsquare_average ) )
-        return B1
+        return  B1 
     
     def calculate_B0 ( self ) :
         B0 = self.Yaverage - ( self.B1 * self.Xaverage )
-        return B0
+        return  B0  
     
 
     def calculate_Rxy ( self ) : 
@@ -80,9 +118,6 @@ class Logic :
 
          
 
-
-        
-        
 
 
 
